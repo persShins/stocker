@@ -48,3 +48,20 @@ def Kospi_All():
     dict={"Code":code, "Current_value":current_value}
     data=pd.DataFrame(dict)
     return data
+
+
+#엔시소프트인 경우의 url(eps정보와 per정보)를 가지고 온다
+url='https://comp.fnguide.com/SVO2/ASP/SVD_Invest.asp?pGB=1&gicode=A036570&cID=&MenuYn=Y&ReportGB=B&NewMenuID=105&stkGb=701'
+res = requests.get(url)
+soup = BeautifulSoup(res.text, 'lxml')
+s=soup.find_all(attrs={"class":'rwf acd_dep_start_close'},limit=9)
+stocker=[[0] for i in range(2)]
+n=0
+for i in s:
+    if i.find(text='PER') or i.find(text='EPS'):
+        stock_list=i.find_all(attrs={"class":'r'})
+        for stock in stock_list:
+            stocker[n].extend(stock.get_text().split('\n'))
+        stocker[n].remove(0)
+        stocker[n].pop(4)
+        n+=1
